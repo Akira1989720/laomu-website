@@ -1,0 +1,96 @@
+# Pages CMS 後台設定：決定後台會出現哪些表單、每個欄位長什麼樣子。
+# 說明文件：https://pagescms.org/docs/configuration/
+
+# 上傳的圖片存放位置
+media:
+  input: public/images        # 存進儲存庫的這個資料夾
+  output: /images             # 寫進案例資料時的路徑開頭
+  rename: safe                # 檔名自動整理成網址可用的格式
+  extensions: [jpg, jpeg, png]
+
+content:
+  - name: works
+    label: 案例
+    type: collection
+    path: src/content/works
+    format: yaml-frontmatter
+    # 新增案例時可填「網址代稱」（案例內頁網址的結尾，請用英文小寫、數字和 -）
+    filename:
+      template: "works-{year}{month}{day}-{hour}{minute}.md"
+      field: create
+    view:
+      primary: title
+      fields: [title, category, year, featured]
+      sort: year
+      order: desc
+    fields:
+      - name: title
+        label: 案名
+        type: string
+        required: true
+      - name: category
+        label: 類型
+        type: select
+        required: true
+        options:
+          values: [政府標案, 企業專案]
+      - name: year
+        label: 年份
+        type: number
+        required: true
+        description: 西元年，例如 2025。作品列表會依年份由新到舊排列。
+      - name: client
+        label: 主辦／委託單位
+        type: string
+        description: 可留空
+      - name: location
+        label: 地點
+        type: string
+        description: 可留空
+      - name: scope
+        label: 負責範圍
+        type: string
+        list: true
+        description: 一項一格，例如「活動企劃」、「現場執行」
+      - name: summary
+        label: 一句話摘要
+        type: text
+        required: true
+        description: 顯示在作品列表的卡片上，建議 40 字以內
+      - name: cover
+        label: 封面照片
+        type: image
+        required: true
+      - name: coverAlt
+        label: 封面照片說明
+        type: string
+        description: 用一句話描述照片內容（給視障者的螢幕報讀和 Google 搜尋使用）
+      - name: gallery
+        label: 現場照片
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "照片 {index}：{caption}"
+        fields:
+          - name: image
+            label: 照片
+            type: image
+            required: true
+          - name: caption
+            label: 照片說明
+            type: string
+            description: 可留空
+      - name: video
+        label: YouTube 影片網址
+        type: string
+        description: 可留空。直接貼上 YouTube 網址即可（一般網址、youtu.be 短網址、Shorts 都可以）
+      - name: featured
+        label: 首頁精選
+        type: boolean
+        description: 勾選後會出現在首頁「精選現場」（最多顯示 4 個，依年份由新到舊）
+      - name: body
+        label: 內文介紹
+        type: rich-text
+        options:
+          format: markdown
