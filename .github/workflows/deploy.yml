@@ -1,0 +1,36 @@
+# 自動部署設定：每次有內容存進 main（包含之後從後台存檔），
+# GitHub 就會自動重新產生網站，並發布到 GitHub Pages。
+name: Deploy to GitHub Pages
+
+on:
+  # 每次推送到 main 分支時自動執行
+  push:
+    branches: [ main ]
+  # 也可以在 GitHub 的 Actions 分頁手動執行
+  workflow_dispatch:
+
+# 允許這個流程讀取程式碼並發布網站
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 取得儲存庫內容
+        uses: actions/checkout@v7
+      - name: 安裝套件、產生網站、上傳
+        uses: withastro/action@v6
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 發布到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
