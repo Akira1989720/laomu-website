@@ -1,0 +1,7 @@
+# 安裝的套件與建置結果，不需要放進 GitHub
+node_modules/
+dist/
+.astro/
+
+# 系統檔
+.DS_Store
