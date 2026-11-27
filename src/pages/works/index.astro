@@ -1,0 +1,84 @@
+---
+// 作品列表頁：/works/
+// 所有案例依年份由新到舊排列，可依類型篩選。篩選結果會記在網址上（例如 /works/?type=gov），
+// 所以從案例內頁按「返回」時，會回到同一個篩選結果。
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Contact from '../../components/Contact.astro';
+import { asset, url } from '../../lib/paths.js';
+import { categories, categoryKey, getSortedWorks, workUrl } from '../../lib/works.js';
+
+const works = await getSortedWorks();
+---
+<BaseLayout title="專案作品｜荖慕工作室有限公司" description="荖慕工作室的政府標案與企業專案作品：活動企劃與執行、公關活動、文化藝術策展。">
+  <div class="section-band band-works"><div class="shell">
+  <section class="works works-page" aria-labelledby="works-page-title">
+    <nav class="breadcrumb" aria-label="目前位置">
+      <ol><li><a href={url('')}>首頁</a></li><li aria-current="page">專案作品</li></ol>
+    </nav>
+    <div class="section-heading">
+      <div><p class="eyebrow">PROJECT ARCHIVE<span class="slash">/</span>專案作品</p><h1 id="works-page-title" class="page-title">所有專案</h1></div>
+      <div class="filters" role="group" aria-label="依類型篩選">
+        <button class="filter current" type="button" data-filter="all" aria-pressed="true">全部</button>
+        {categories.map((c) => (
+          <button class="filter" type="button" data-filter={c.key} aria-pressed="false">{c.label}</button>
+        ))}
+      </div>
+    </div>
+    <p class="works-count" aria-live="polite">共 {works.length} 個專案</p>
+    <ul class="works-cards">
+      {works.map((work) => (
+        <li class="work-card" data-category={categoryKey(work.data.category)} data-reveal>
+          <a class="work-card-link" href={workUrl(work)}>
+            <div class="project-media"><img src={asset(work.data.cover)} alt={work.data.coverAlt} width="650" height="428" loading="lazy" decoding="async"></div>
+            <div class="project-copy">
+              <p class="project-type">{work.data.category}｜{work.data.year}</p>
+              <h2>{work.data.title}</h2>
+              {work.data.scope.length > 0 && <p class="project-scope">負責範圍｜{work.data.scope.join('、')}</p>}
+              <p class="work-card-summary">{work.data.summary}</p>
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
+    <p class="works-empty" hidden>目前還沒有這個類型的專案。</p>
+  </section>
+  </div></div>
+  <Contact />
+</BaseLayout>
+
+<script>
+  // 篩選功能：點選類型按鈕，只顯示該類型的案例，並把選擇記在網址上。
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('.works-page [data-filter]')];
+  const cards = [...document.querySelectorAll<HTMLElement>('.work-card')];
+  const count = document.querySelector('.works-count');
+  const empty = document.querySelector<HTMLElement>('.works-empty');
+  const validTypes = buttons.map((b) => b.dataset.filter);
+
+  function applyFilter(type: string) {
+    if (!validTypes.includes(type)) type = 'all';
+    let shown = 0;
+    cards.forEach((card) => {
+      const match = type === 'all' || card.dataset.category === type;
+      card.hidden = !match;
+      if (match) shown++;
+    });
+    buttons.forEach((b) => {
+      const active = b.dataset.filter === type;
+      b.classList.toggle('current', active);
+      b.setAttribute('aria-pressed', String(active));
+    });
+    if (count) count.textContent = `共 ${shown} 個專案`;
+    if (empty) empty.hidden = shown > 0;
+    return type;
+  }
+
+  buttons.forEach((b) => b.addEventListener('click', () => {
+    const type = applyFilter(b.dataset.filter ?? 'all');
+    const next = new URL(location.href);
+    if (type === 'all') next.searchParams.delete('type');
+    else next.searchParams.set('type', type);
+    history.replaceState(null, '', next);
+  }));
+
+  applyFilter(new URLSearchParams(location.search).get('type') ?? 'all');
+</script>

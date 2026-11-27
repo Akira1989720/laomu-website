@@ -1,13 +1,14 @@
 ---
 // 頁首：Logo、主選單、「洽談合作」按鈕。手機版的「選單」按鈕也在這裡。
-import { img } from '../lib/paths.js';
+// 選單連結都指向首頁的區塊，所以在作品列表頁、案例內頁點選也會跳回首頁對應位置。
+import { img, url } from '../lib/paths.js';
 ---
 <header class="site-header shell">
   <div class="header-inner">
-    <a class="brand" href="#home" aria-label="荖慕工作室有限公司，回到首頁"><img src={img('logo.png')} alt="荖慕工作室有限公司" width="515" height="100"></a>
+    <a class="brand" href={url('#home')} aria-label="荖慕工作室有限公司，回到首頁"><img src={img('logo.png')} alt="荖慕工作室有限公司" width="515" height="100"></a>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav">選單</button>
     <nav class="main-nav" id="main-nav" aria-label="主要導覽">
-      <a href="#home">首頁</a><a href="#works">專案作品</a><a href="#services">服務項目</a><a href="#about">關於荖慕</a><a href="#contact">聯絡我們</a>
+      <a href={url('#home')}>首頁</a><a href={url('#works')}>專案作品</a><a href={url('#services')}>服務項目</a><a href={url('#about')}>關於荖慕</a><a href={url('#contact')}>聯絡我們</a>
     </nav>
     <a class="dark-button header-cta" href="#contact">洽談合作</a>
   </div>
