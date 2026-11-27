@@ -149,3 +149,12 @@ a.text-link:hover{color:var(--green);border-color:var(--green)}
 @media(max-width:1100px){.case-title{font-size:52px}.case-layout{gap:40px}}
 @media(max-width:900px){.case-page{padding-top:40px;padding-bottom:56px}.case-title{font-size:44px}.case-summary{font-size:19px}.case-layout{grid-template-columns:1fr;gap:36px}.case-section{margin-top:56px}.case-nav{grid-template-columns:1fr 1fr;margin-top:60px}.case-nav-back{grid-column:1/-1;grid-row:2;justify-self:center}}
 @media(max-width:540px){.case-page{padding-top:28px;padding-bottom:44px}.case-head{margin-top:24px}.case-title{font-size:clamp(30px,8.6vw,38px)}.case-summary{font-size:17px}.case-cover{margin-top:28px;aspect-ratio:4/3}.case-info div{grid-template-columns:82px 1fr;gap:12px}.case-info dd{font-size:16px}.case-body{font-size:17px}.case-gallery{grid-template-columns:1fr;gap:28px}.case-nav-title{font-size:18px}.case-nav{gap:16px}}
+
+/* ===== 首頁精選現場：整張卡片可點擊、篩選標籤與「查看全部專案」改為連結 ===== */
+.featured,.work-row{position:relative}
+.card-link::after{content:"";position:absolute;inset:0;z-index:1}
+.card-link:focus-visible{outline:none}
+.card-link:focus-visible::after{outline:3px solid var(--green);outline-offset:6px}
+@media(hover:hover) and (pointer:fine){.featured:hover .card-link,.work-row:hover .card-link{color:var(--green)}}
+a.filter:not(.current):hover{color:var(--green)}
+.all-projects a.text-link{cursor:pointer}

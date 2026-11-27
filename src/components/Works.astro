@@ -1,27 +1,37 @@
 ---
-// 首頁「精選現場」：1 個大案例＋3 個小案例。
-// 目前案名、類型、負責範圍都是「待補」，之後會改由後台編輯。
-import { img } from '../lib/paths.js';
+// 首頁「精選現場」：自動顯示勾選「首頁精選」的案例（最多 4 個，依年份由新到舊）。
+// 第 1 個是大卡片，其餘是右側的小卡片。點卡片會進入案例內頁。
+// 如果沒有任何案例勾選「首頁精選」，就改為顯示最新的 4 個案例，避免區塊空白。
+// 篩選標籤會跳到作品列表頁，並自動套用該分類。
+import { asset, url } from '../lib/paths.js';
+import { categories, getSortedWorks, workUrl } from '../lib/works.js';
+
+const all = await getSortedWorks();
+const picked = all.filter((w) => w.data.featured);
+const featured = (picked.length > 0 ? picked : all).slice(0, 4);
+const [lead, ...rest] = featured;
 ---
 <div class="section-band band-works"><div class="shell">
 <section class="works" id="works" aria-labelledby="works-title">
   <div class="section-heading">
     <div><p class="eyebrow">PROJECT ARCHIVE<span class="slash">/</span>專案作品</p><h2 id="works-title">精選現場</h2></div>
-    <div class="filters" aria-label="案例分類尚待確認">
-      <span class="filter current" aria-current="true">全部</span><span class="filter" aria-disabled="true" title="案例類型待補，暫未開放篩選">政府標案</span><span class="filter" aria-disabled="true" title="案例類型待補，暫未開放篩選">企業專案</span>
-    </div>
+    <nav class="filters" aria-label="依類型瀏覽全部專案">
+      <a class="filter current" href={url('works/')}>全部</a>{categories.map((c) => (<a class="filter" href={url(`works/?type=${c.key}`)}>{c.label}</a>))}
+    </nav>
   </div>
+  {lead && (
   <div class="works-grid">
-    <article class="featured" data-reveal aria-label="精選現場一，案名待補">
-      <div class="project-media"><img class="featured-photo" src={img('works-01.jpg')} alt="戶外歌仔戲演出，觀眾面向傳統彩繪戲台欣賞表演" width="1300" height="867" loading="lazy" decoding="async"></div>
-      <div class="project-copy"><p class="project-type">類型｜待補</p><h3>待補</h3><p class="project-scope">負責範圍｜待補</p></div>
+    <article class="featured" data-reveal>
+      <div class="project-media"><img class="featured-photo" src={asset(lead.data.cover)} alt={lead.data.coverAlt} width="1300" height="867" loading="lazy" decoding="async"></div>
+      <div class="project-copy"><p class="project-type">{lead.data.category}｜{lead.data.year}</p><h3><a class="card-link" href={workUrl(lead)}>{lead.data.title}</a></h3>{lead.data.scope.length > 0 && <p class="project-scope">負責範圍｜{lead.data.scope.join('、')}</p>}</div>
     </article>
     <div class="work-list">
-      <article class="work-row" data-reveal aria-label="精選現場二，案名待補"><div class="project-media"><img src={img('works-02.jpg')} alt="藝術節觀眾坐在草地上，專注欣賞演出" width="650" height="434" loading="lazy" decoding="async"></div><div class="project-copy"><p class="project-type">類型｜待補</p><h3>待補</h3><p class="project-scope">負責範圍｜待補</p></div></article>
-      <article class="work-row" data-reveal aria-label="精選現場三，案名待補"><div class="project-media"><img src={img('works-03.jpg')} alt="古蹟走讀參與者在廟宇前合影" width="650" height="488" loading="lazy" decoding="async"></div><div class="project-copy"><p class="project-type">類型｜待補</p><h3>待補</h3><p class="project-scope">負責範圍｜待補</p></div></article>
-      <article class="work-row" data-reveal aria-label="精選現場四，案名待補"><div class="project-media"><img src={img('works-04.jpg')} alt="由高處俯瞰戶外公演，觀眾整齊聚集在體育場草地" width="650" height="433" loading="lazy" decoding="async"></div><div class="project-copy"><p class="project-type">類型｜待補</p><h3>待補</h3><p class="project-scope">負責範圍｜待補</p></div></article>
+      {rest.map((w) => (
+        <article class="work-row" data-reveal><div class="project-media"><img src={asset(w.data.cover)} alt={w.data.coverAlt} width="650" height="434" loading="lazy" decoding="async"></div><div class="project-copy"><p class="project-type">{w.data.category}｜{w.data.year}</p><h3><a class="card-link" href={workUrl(w)}>{w.data.title}</a></h3>{w.data.scope.length > 0 && <p class="project-scope">負責範圍｜{w.data.scope.join('、')}</p>}</div></article>
+      ))}
     </div>
   </div>
-  <div class="all-projects"><span class="text-link" aria-disabled="true" title="完整專案列表待補">查看全部專案</span></div>
+  )}
+  <div class="all-projects"><a class="text-link" href={url('works/')}>查看全部專案</a></div>
 </section>
 </div></div>
